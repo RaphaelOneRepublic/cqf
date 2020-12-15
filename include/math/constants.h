@@ -14,6 +14,10 @@ struct constants {
 
   inline static constexpr Numeric e
       = static_cast<Numeric>(2.7182818284590452353602874713526624977572l);
+
+  inline static constexpr Numeric _2pi = 2. * pi;
+
+  inline static constexpr Numeric _half_pi = 0.5 * pi;
 };
 } // namespace cqf
 #endif //CONSTEXPR_QUANTITATIVE_INCLUDE_MATH_CONSTANTS_H_

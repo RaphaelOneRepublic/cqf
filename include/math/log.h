@@ -40,7 +40,7 @@ ln_impl(Float x) {
          x < static_cast<Float>(1.) ?
          -ln_recur(static_cast<Float>(1.) / x, static_cast<Float>(1.) / x, static_cast<Float>(0.), 1) :
          ln_recur(x, x, static_cast<Float>(0.), 1);
-}+
+}
 } // namespace impl
 /**
  * Natural logarithm, i.e. logarithm with Euler number as base

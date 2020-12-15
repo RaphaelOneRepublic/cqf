@@ -14,7 +14,7 @@
 #include "math/log.h"
 #include "math/sqrt.h"
 #include "math/erf.h"
-#include "math/sin.h"
+#include "math/trig.h"
 
 class TestSuite :
     public ::testing::Test {
@@ -28,7 +28,6 @@ class TestSuite :
 };
 
 TEST_F(TestSuite, main) {
-  // TODO
-
+  std::cout << std::setprecision(15) << cqf::cos(3. / 6 * cqf::constants<double>::pi) << std::endl;
 }
 #pragma clang diagnostic pop
