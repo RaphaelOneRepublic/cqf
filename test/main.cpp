@@ -15,6 +15,10 @@
 #include "math/sqrt.h"
 #include "math/erf.h"
 #include "math/trig.h"
+#include "math/gcd.h"
+#include "math/norm.h"
+
+#include "model/black_scholes.h"
 
 class TestSuite :
     public ::testing::Test {
@@ -28,7 +32,7 @@ class TestSuite :
 };
 
 TEST_F(TestSuite, main) {
-  std::cout << std::setprecision(15) << cqf::cos(3. / 6 * cqf::constants<double>::pi) << std::endl;
-  cqf::
+  cqf::vanilla option(100., 100., 1., 0.05, 0.3);
+  std::cout << option.premium() << std::endl;
 }
 #pragma clang diagnostic pop

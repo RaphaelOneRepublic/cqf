@@ -27,19 +27,29 @@ template<typename Float, typename = floating_guard<Float>>
 inline static constexpr
 Float
 ln_recur(Float x, Float l0, Float l1, size_t recur) noexcept {
-  return abs(l0 - l1) / l0 < limits<Float>::epsilon() or recur > 255 ? l0 :
+  return abs(l0 - l1) / l0 < limits<Float>::epsilon() or recur > 512 ? l0 :
          ln_recur(x, l0 + static_cast<Float>(2.) * (x - exp(l0)) / (x + exp(l0)), l0, recur + 1);
 }
 
 template<typename Float, typename = floating_guard<Float>>
 inline static constexpr
 Float
-ln_impl(Float x) noexcept {
-  return x <= static_cast<Float>(0.) ? limits<Float>::quiet_NaN() :
-         x == static_cast<Float>(1.) ? static_cast<Float>(0) :
-         x < static_cast<Float>(1.) ?
-         -ln_recur(static_cast<Float>(1.) / x, static_cast<Float>(1.) / x, static_cast<Float>(0.), 1) :
+ln_reduce(Float x) noexcept {
+  return limits<Float>::epsilon() > abs(x - constants<Float>::e) ? static_cast<Float>(1) :
+         x > constants<Float>::e ? ln_reduce(x / constants<Float>::e) + static_cast<Float>(1) :
          ln_recur(x, x, static_cast<Float>(0.), 1);
+}
+
+template<typename Float, typename = floating_guard<Float>>
+inline static constexpr
+Float
+ln_impl(Float x) noexcept {
+  return nan(x) or x == limits<Float>::infinity() ? x :
+         x <= static_cast<Float>(0.) ? limits<Float>::quiet_NaN() :
+         x == static_cast<Float>(1.) ? static_cast<Float>(0) :
+         x < static_cast<Float>(1.) ? -ln_reduce(static_cast<Float>(1.) / x) :
+         ln_reduce(x);
+
 }
 } // namespace impl
 /**

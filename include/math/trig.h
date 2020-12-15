@@ -3,6 +3,7 @@
 //
 #ifndef CONSTEXPR_QUANTITATIVE_INCLUDE_MATH_TRIG_H_
 #define CONSTEXPR_QUANTITATIVE_INCLUDE_MATH_TRIG_H_
+
 #include <cstddef>
 
 #include "traits.h"
@@ -62,6 +63,16 @@ deg(Numeric x) noexcept {
 }
 
 namespace impl {
+/**
+ * iteratively expands sine function with Taylor series
+ *
+ * @tparam Float
+ * @param x
+ * @param acc
+ * @param fac
+ * @param recur
+ * @return
+ */
 template<typename Float, typename  = floating_guard<Float>>
 inline static constexpr
 promoted<Float>
@@ -70,7 +81,13 @@ sin_recur(Float x, Float acc, Float fac, size_t recur) noexcept {
          sin_recur(x, acc + fac,
                    -fac * x * x / (2. * static_cast<Float>(recur)) / (2. * static_cast<Float>(recur) + 1.), recur + 1);
 }
-
+/**
+ * sine of normalized angle
+ *
+ * @tparam Float
+ * @param x
+ * @return
+ */
 template<typename Float, typename  = floating_guard<Float>>
 inline static constexpr
 promoted<Float>
@@ -80,6 +97,13 @@ sin_impl(Float x) noexcept {
 }
 } // namespace impl
 
+/**
+ * sine function
+ *
+ * @tparam Numeric
+ * @param x
+ * @return
+ */
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
@@ -88,6 +112,16 @@ sin(Numeric x) noexcept {
 }
 
 namespace impl {
+/**
+ * iteratively expands cosine function with Taylor series
+ *
+ * @tparam Float
+ * @param x
+ * @param acc
+ * @param fac
+ * @param recur
+ * @return
+ */
 template<typename Float, typename  = floating_guard<Float>>
 inline static constexpr
 promoted<Float>
@@ -97,6 +131,13 @@ cos_recur(Float x, Float acc, Float fac, size_t recur) noexcept {
                    -fac * x * x / (2. * static_cast<Float>(recur)) / (2. * static_cast<Float>(recur) - 1.), recur + 1);
 }
 
+/**
+ * cosine of normalized angle
+ *
+ * @tparam Float
+ * @param x
+ * @return
+ */
 template<typename Float, typename  = floating_guard<Float>>
 inline static constexpr
 promoted<Float>
@@ -109,11 +150,72 @@ cos_impl(Float x) noexcept {
 }
 } // namespace impl
 
+/**
+ * cosine function
+ *
+ * @tparam Numeric
+ * @param x
+ * @return
+ */
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
 cos(Numeric x) noexcept {
   return impl::cos_impl(wrap_angle(x));
+}
+
+/**
+ * tangent function
+ * TODO use taylor approximation expansion can save computation
+ *
+ * @tparam Numeric
+ * @param x
+ * @return
+ */
+template<typename Numeric>
+inline static constexpr
+promoted<Numeric>
+tan(Numeric x) noexcept {
+  return sin(x) / cos(x);
+}
+
+/**
+ * secant function
+ *
+ * @tparam Numeric
+ * @param x
+ * @return
+ */
+template<typename Numeric>
+promoted<Numeric>
+sec(Numeric x) noexcept {
+  return 1. / cos(x);
+}
+
+/**
+ * cosecant function
+ *
+ * @tparam Numeric
+ * @param x
+ * @return
+ */
+template<typename Numeric>
+promoted<Numeric>
+csc(Numeric x) noexcept {
+  return 1. / sin(x);
+}
+
+/**
+ * cotangent function
+ *
+ * @tparam Numeric
+ * @param x
+ * @return
+ */
+template<typename Numeric>
+promoted<Numeric>
+ctg(Numeric x) noexcept {
+  return cos(x) / sin(x);
 }
 } // namespace cqf
 #endif //CONSTEXPR_QUANTITATIVE_INCLUDE_MATH_TRIG_H_

@@ -10,10 +10,13 @@ namespace cqf {
 template<typename Numeric, typename = floating_guard<Numeric>>
 struct constants {
   inline static constexpr Numeric pi
-      = static_cast<Numeric>(3.1415926535897932384626433832795028841972l);
+      = static_cast<Numeric>(3.14159265358979323846264338327950288419716939937510l);
 
   inline static constexpr Numeric e
-      = static_cast<Numeric>(2.7182818284590452353602874713526624977572l);
+      = static_cast<Numeric>(2.71828182845904523536028747135266249775724709369995l);
+
+  inline static constexpr Numeric sqrt2
+      = static_cast<Numeric>(1.41421356237309504880168872420969807856967187537694l);
 
   inline static constexpr Numeric _2pi = 2. * pi;
 
