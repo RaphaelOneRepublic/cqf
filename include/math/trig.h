@@ -13,7 +13,7 @@ namespace cqf {
 namespace impl {
 template<typename Float, typename = floating_guard<Float>>
 inline static constexpr
-Float wrap_angle_impl(Float x) {
+Float wrap_angle_impl(Float x) noexcept {
   return nan(x) or x == limits<Float>::infinity() or x == -limits<Float>::infinity() ? limits<Float>::quiet_NaN() :
          x >= -constants<Float>::pi and x < constants<Float>::pi ? x :
          fraction(x / constants<Float>::_2pi) * constants<Float>::_2pi;
@@ -30,7 +30,7 @@ Float wrap_angle_impl(Float x) {
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
-wrap_angle(Numeric x) {
+wrap_angle(Numeric x) noexcept {
   return impl::wrap_angle_impl(static_cast<promoted<Numeric>>(x));
 }
 
@@ -44,7 +44,7 @@ wrap_angle(Numeric x) {
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
-rad(Numeric x) {
+rad(Numeric x) noexcept {
   return static_cast<promoted<Numeric>>(x) / 180. * constants < promoted < Numeric >> ::pi;
 }
 
@@ -57,7 +57,7 @@ rad(Numeric x) {
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
-deg(Numeric x) {
+deg(Numeric x) noexcept {
   return static_cast<promoted<Numeric>>(x) * 180. / constants < promoted < Numeric >> ::pi;
 }
 
@@ -65,7 +65,7 @@ namespace impl {
 template<typename Float, typename  = floating_guard<Float>>
 inline static constexpr
 promoted<Float>
-sin_recur(Float x, Float acc, Float fac, size_t recur) {
+sin_recur(Float x, Float acc, Float fac, size_t recur) noexcept {
   return recur > 16 ? acc :
          sin_recur(x, acc + fac,
                    -fac * x * x / (2. * static_cast<Float>(recur)) / (2. * static_cast<Float>(recur) + 1.), recur + 1);
@@ -74,7 +74,7 @@ sin_recur(Float x, Float acc, Float fac, size_t recur) {
 template<typename Float, typename  = floating_guard<Float>>
 inline static constexpr
 promoted<Float>
-sin_impl(Float x) {
+sin_impl(Float x) noexcept {
   return limits<Float>::epsilon() > abs(x + constants<Float>::pi) ? 0 :
          sin_recur(x, static_cast<Float>(0), x, 1);
 }
@@ -83,7 +83,7 @@ sin_impl(Float x) {
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
-sin(Numeric x) {
+sin(Numeric x) noexcept {
   return impl::sin_impl(wrap_angle(x));
 }
 
@@ -91,7 +91,7 @@ namespace impl {
 template<typename Float, typename  = floating_guard<Float>>
 inline static constexpr
 promoted<Float>
-cos_recur(Float x, Float acc, Float fac, size_t recur) {
+cos_recur(Float x, Float acc, Float fac, size_t recur) noexcept {
   return recur > 16 ? acc :
          cos_recur(x, acc + fac,
                    -fac * x * x / (2. * static_cast<Float>(recur)) / (2. * static_cast<Float>(recur) - 1.), recur + 1);
@@ -100,7 +100,7 @@ cos_recur(Float x, Float acc, Float fac, size_t recur) {
 template<typename Float, typename  = floating_guard<Float>>
 inline static constexpr
 promoted<Float>
-cos_impl(Float x) {
+cos_impl(Float x) noexcept {
   return limits<Float>::epsilon() > abs(x + constants<Float>::pi) ? -1 :
          limits<Float>::epsilon() > abs(x) ? 1 :
          limits<Float>::epsilon() > abs(x + constants<Float>::_half_pi) ? 0 :
@@ -112,7 +112,7 @@ cos_impl(Float x) {
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
-cos(Numeric x) {
+cos(Numeric x) noexcept {
   return impl::cos_impl(wrap_angle(x));
 }
 } // namespace cqf

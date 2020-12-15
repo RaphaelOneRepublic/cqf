@@ -29,5 +29,6 @@ class TestSuite :
 
 TEST_F(TestSuite, main) {
   std::cout << std::setprecision(15) << cqf::cos(3. / 6 * cqf::constants<double>::pi) << std::endl;
+  cqf::
 }
 #pragma clang diagnostic pop

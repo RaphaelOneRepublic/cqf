@@ -13,14 +13,14 @@ namespace cqf {
 namespace impl {
 template<typename Float, typename = floating_guard<Float>>
 inline static constexpr
-Float sqrt_recur(Float x, Float s0, Float s1, size_t recur) {
+Float sqrt_recur(Float x, Float s0, Float s1, size_t recur) noexcept {
   return abs(s0 - s1) / s0 < limits<Float>::epsilon() or recur > 1024 ? s0 :
          sqrt_recur(x, static_cast<Float>(0.5) * (s0 + x / s0), s0, recur + 1);
 }
 
 template<typename Float, typename = floating_guard<Float>>
 inline static constexpr
-Float sqrt_impl(Float x) {
+Float sqrt_impl(Float x) noexcept {
   return nan(x) or x == limits<Float>::infinity() ? x :
          x < 0 ? limits<Float>::quiet_NaN() :
          x == static_cast<Float>(0) ? static_cast<Float>(+0) :
@@ -30,7 +30,7 @@ Float sqrt_impl(Float x) {
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
-sqrt(Numeric x) {
+sqrt(Numeric x) noexcept {
   return impl::sqrt_impl(static_cast<promoted<Numeric>>(x));
 }
 } // namespace cqf

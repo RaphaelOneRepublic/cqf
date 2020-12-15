@@ -26,7 +26,7 @@ namespace impl {
 template<typename Float, typename = floating_guard<Float>>
 inline static constexpr
 Float
-ln_recur(Float x, Float l0, Float l1, size_t recur) {
+ln_recur(Float x, Float l0, Float l1, size_t recur) noexcept {
   return abs(l0 - l1) / l0 < limits<Float>::epsilon() or recur > 255 ? l0 :
          ln_recur(x, l0 + static_cast<Float>(2.) * (x - exp(l0)) / (x + exp(l0)), l0, recur + 1);
 }
@@ -34,7 +34,7 @@ ln_recur(Float x, Float l0, Float l1, size_t recur) {
 template<typename Float, typename = floating_guard<Float>>
 inline static constexpr
 Float
-ln_impl(Float x) {
+ln_impl(Float x) noexcept {
   return x <= static_cast<Float>(0.) ? limits<Float>::quiet_NaN() :
          x == static_cast<Float>(1.) ? static_cast<Float>(0) :
          x < static_cast<Float>(1.) ?
@@ -55,7 +55,7 @@ ln_impl(Float x) {
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
-ln(Numeric x) {
+ln(Numeric x) noexcept {
   return x == static_cast<Numeric>(2) ? static_cast<promoted<Numeric>>(0.6931471805599453094172321214581765680755l) :
          x == static_cast<Numeric>(10) ? static_cast<promoted<Numeric>>(2.3025850929940456840179914546843642076011l) :
          impl::ln_impl(static_cast<promoted<Numeric>>(x));
@@ -70,7 +70,7 @@ ln(Numeric x) {
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
-log2(Numeric x) {
+log2(Numeric x) noexcept {
   return ln(x) / ln(static_cast<Numeric>(2));
 }
 
@@ -84,7 +84,7 @@ log2(Numeric x) {
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
-log10(Numeric x) {
+log10(Numeric x) noexcept {
   return ln(x) / ln(static_cast<Numeric>(10));
 }
 } // namespace cqf

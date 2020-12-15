@@ -9,7 +9,7 @@ template<typename Integral, integral_guard<Integral>>
 inline static constexpr
 promoted<Integral>
 factorial(Integral x) {
-  return ;
+  return 0;
 }
 }// namespace cqf
 #endif //CONSTEXPR_QUANTITATIVE_INCLUDE_MATH_GAMMA_H_

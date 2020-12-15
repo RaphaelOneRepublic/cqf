@@ -126,7 +126,7 @@ min(Numeric1 x, Numeric2 y) noexcept {
 template<typename Numeric, typename... Numerics>
 inline static constexpr
 common<Numeric, Numerics...>
-min(Numeric x, Numerics... numerics) {
+min(Numeric x, Numerics... numerics) noexcept {
   return static_cast<common < Numeric, Numerics...>>(x <= min(numerics...) ? x : min(numerics...));
 }
 
@@ -157,7 +157,7 @@ max(Numeric1 x, Numeric2 y) noexcept {
 template<typename Numeric, typename... Numerics>
 inline static constexpr
 common<Numeric, Numerics...>
-max(Numeric x, Numerics... numerics) {
+max(Numeric x, Numerics... numerics) noexcept {
   return static_cast<common < Numeric, Numerics...>>(x >= max(numerics...) ? x : max(numerics...));
 }
 
@@ -170,7 +170,7 @@ max(Numeric x, Numerics... numerics) {
 template<typename Numeric>
 inline static constexpr
 Numeric
-round(Numeric x) {
+round(Numeric x) noexcept {
   return nan(x) or x == limits<Numeric>::infinity() ? x :   //  nan / infinity
          static_cast<Numeric>(floor(x + 0.5));
 }
@@ -185,7 +185,7 @@ round(Numeric x) {
 template<typename Numeric>
 inline static constexpr
 Numeric
-fraction(Numeric x) {
+fraction(Numeric x) noexcept {
   return nan(x) or x == limits<Numeric>::infinity() ? x :   //  nan / infinity
          static_cast<Numeric>(x - floor(x + 0.5));
 }

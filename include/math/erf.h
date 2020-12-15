@@ -25,7 +25,7 @@ namespace impl {
 template<typename Float, typename =floating_guard<Float>>
 inline static constexpr
 Float
-erf_recur(Float x, Float acc, Float fac, size_t recur) {
+erf_recur(Float x, Float acc, Float fac, size_t recur) noexcept {
   return abs(fac / acc) < limits<Float>::epsilon() or recur > 64 ? acc :
          erf_recur(x, acc + fac,
                    -fac * x * x
@@ -49,7 +49,7 @@ erf_recur(Float x, Float acc, Float fac, size_t recur) {
 template<typename Float, typename =floating_guard<Float>>
 inline static constexpr
 Float
-erf_recur_large(Float x, Float acc, Float fac, size_t recur) {
+erf_recur_large(Float x, Float acc, Float fac, size_t recur) noexcept {
   return abs(fac / acc) < limits<Float>::epsilon() or recur > 9 ? acc :
          erf_recur_large(x, acc + fac, -fac * (2. * static_cast<Float>(recur) - 1.) / (2. * x * x), recur + 1);
 }
@@ -57,7 +57,7 @@ erf_recur_large(Float x, Float acc, Float fac, size_t recur) {
 template<typename Float, typename =floating_guard<Float>>
 inline static constexpr
 Float
-erf_impl(Float x) {
+erf_impl(Float x) noexcept {
   return nan(x) ? x :
          x == limits<Float>::infinity() ? static_cast<Float>(1) :
          x == -limits<Float>::infinity() ? static_cast<Float>(-1) :
@@ -79,7 +79,7 @@ erf_impl(Float x) {
 template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
-erf(Numeric x) {
+erf(Numeric x) noexcept {
   return impl::erf_impl(static_cast<promoted<Numeric>>(x));
 }
 } // namespace cqf

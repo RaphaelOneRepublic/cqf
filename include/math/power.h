@@ -12,7 +12,7 @@ namespace impl {
 template<typename Numeric, typename Integral, typename = integral_guard<Integral>>
 inline static constexpr
 Numeric
-power_impl(Numeric x, Numeric acc, Integral n) {
+power_impl(Numeric x, Numeric acc, Integral n) noexcept {
   return n < 0. ? power_impl(static_cast<Numeric>(1.) / x, acc, -n) :
          n == 0. ? acc :
          n == 1. ? acc * x :
@@ -31,7 +31,7 @@ power_impl(Numeric x, Numeric acc, Integral n) {
 template<typename Numeric, typename Integral, typename = integral_guard<Integral>>
 inline static constexpr
 Numeric
-power(Numeric x, Integral n) {
+power(Numeric x, Integral n) noexcept {
   return impl::power_impl(x, static_cast<Numeric>(1), n);
 }
 } // namespace cqf
