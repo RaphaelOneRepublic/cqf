@@ -5,46 +5,282 @@
 #define CONSTEXPR_QUANTITATIVE_INCLUDE_MODEL_BLACK_SCHOLES_H_
 
 #include "math/traits.h"
-#include "math/norm.h"
-#include "math//log.h"
+#include "math/erf.h"
+#include "math/log.h"
+#include "math/sqrt.h"
 
 namespace cqf {
-template<typename F, typename = floating_guard<F>>
-class vanilla {
-  F S_;
-  F K_;
-  F r_;
-  F q_;
-  F T_;
-  F sigma_;
-  F premium_;
+/**
+ * base class for European style plain vanilla options.
+ *
+ * @tparam Float
+ */
+template<typename Float, typename = floating_guard<Float>>
+struct vanilla_template {
 
-  F d1_;
-  F d2_;
+  Float S;        // spot underlying
+  Float K;        // strike
+  Float T;        // time to maturity
+  Float r;        // risk-free interest rate
+  Float q;        // dividend rate
+  Float sigma;    // implied volatility
+
 
  public:
+  /**
+   * constructor.
+   *
+   * @param S underlying spot price
+   * @param K strike price
+   * @param T time to maturity
+   * @param r risk-free interest rate
+   * @param q dividend paying rate of underlying
+   * @param sigma implied volatility
+   */
   inline explicit constexpr
-  vanilla(F S, F K, F T, F r, F sigma, F q = 0) {
-    S_ = S;
-    K_ = K;
-    r_ = r;
-    q_ = q;
-    T_ = T;
-    sigma_ = sigma;
+  vanilla_template(Float S, Float K, Float T, Float r, Float q, Float sigma)
+      : S(S), K(K), T(T), r(r), q(q), sigma(sigma) {}
 
-    compute();
+  /**
+   * black scholes d1.
+   * un-discounted delta.
+   *
+   * @return
+   */
+  inline constexpr
+  Float d1() const {
+    return (ln(S / K) + (r - q + 0.5 * sigma * sigma) * T) / sigma * sqrt(T);
   }
 
+  /**
+   * black scholes d2.
+   * risk-neutral probability of expiring in the money.
+   *
+   * @return
+   */
   inline constexpr
-  void compute() {
-    d1_ = (ln(S_ / K_) + (r_ + 0.5 * sigma_ * sigma_) * T_) / (sigma_ * sqrt(T_));
-    d2_ = d1_ - sigma_ * sqrt(T_);
-    premium_ = S_ * exp(-q_ * T_) * norm_cdf(d1_) - K_ * exp(-r_ * T_) * norm_cdf(d2_);
+  Float d2() const {
+    return (ln(S / K) + (r - q - 0.5 * sigma * sigma) * T) / sigma * sqrt(T);
   }
 
+  /**
+   * discounted value of underlying spot.
+   *
+   * @return
+   */
   inline constexpr
-  F premium() noexcept {
-    return premium_;
+  Float SPV() const {
+    return S * exp(-q * T);
+  }
+
+  /**
+   * discounted value of underlying strike.
+   *
+   * @return
+   */
+  inline constexpr
+  Float KPV() const {
+    return K * exp(-r * T);
+  }
+
+  /**
+   * value of option.
+   *
+   * @return
+   */
+  inline virtual Float premium() const { return 0; };
+
+  /**
+   * delta of option.
+   * sensitivity of option value with respect to underlying price.
+   * Delta = dV / dS
+   *
+   * @return
+   */
+  inline virtual Float delta() const { return 0; };
+
+  /**
+   * gamma of option.
+   * sensitivity of option delta with respect to underlying price.
+   * Gamma = d^2V / dS^2
+   *
+   * @return
+   */
+  inline constexpr Float gamma() const {
+    return exp(-q * T) * norm_pdf(d1()) / S / sigma / sqrt(T);
+  };
+
+  /**
+   * vega of option.
+   * sensitivity of option value with respect to implied volatility.
+   * Vega = dV / d sigma
+   * @return
+   */
+  inline constexpr Float vega() const {
+    return SPV() * norm_pdf(d1()) * sqrt(T);
+  }
+};
+
+/**
+ * plain vanilla call options.
+ *
+ * @tparam Float
+ */
+template<typename Float, typename = floating_guard<Float>>
+class call_vanilla : public vanilla_template<Float> {
+ public:
+  /**
+   * constructor.
+   *
+   * @param S
+   * @param K
+   * @param T
+   * @param r
+   * @param q
+   * @param sigma
+   */
+  inline explicit constexpr
+  call_vanilla(Float S, Float K, Float T, Float r, Float q, Float sigma)
+      : vanilla_template<Float>(S, K, T, r, q, sigma) {}
+
+  /**
+   * value of option.
+   *
+   * @return
+   */
+  inline constexpr
+  Float premium() const {
+    return this->SPV() * norm_cdf(this->d1()) - this->KPV() * norm_cdf(this->d2());
+  }
+
+  /**
+   * delta of option.
+   * sensitivity of option value with respect to underlying price.
+   * Delta = dV / dS
+   *
+   * @return
+   */
+  inline constexpr
+  Float delta() const {
+    return exp(-this->q * this->T) * norm_cdf(this->d1());
+  }
+
+  /**
+   * compute the implied volatility from the provided information,
+   * and returns a plain vanilla call option instance with the computed implied volatility.
+   *
+   * @param S
+   * @param K
+   * @param T
+   * @param r
+   * @param q
+   * @param price
+   * @return
+   */
+  inline static constexpr
+  call_vanilla<Float>
+  implied(Float S, Float K, Float T, Float r, Float q, Float price) {
+    return implied_newt(call_vanilla<Float>(S, K, T, r, q, 0.5), price);
+  }
+
+  /**
+   * uses newton's method to compute implied volatility.
+   *
+   * @param op
+   * @param price
+   * @return
+   */
+  inline static constexpr
+  call_vanilla<Float>
+  implied_newt(call_vanilla<Float> op, Float price) {
+    return 1e2 /*scaling factor to machine epsilon to compare with absolute error, this is sad*/
+               * limits<Float>::epsilon() * price > abs(op.premium() - price)
+           /*if error is acceptable*/ ? op :
+           /*else*/ implied_newt(
+            /*new option */ call_vanilla<Float>(op.S, op.K, op.T, op.r, op.q,
+                /*new sigma*/ op.sigma - (op.premium() - price) / op.vega()) //  the newton iteration
+            , price);
+  }
+};
+
+/**
+ * plain vanilla put options.
+ *
+ * @tparam Float
+ */
+template<typename Float, typename = floating_guard<Float>>
+class put_vanilla : public vanilla_template<Float> {
+ public:
+  /**
+   * constructor.
+   *
+   * @param S
+   * @param K
+   * @param T
+   * @param r
+   * @param q
+   * @param sigma
+   */
+  inline explicit constexpr
+  put_vanilla(Float S, Float K, Float T, Float r, Float q, Float sigma)
+      : vanilla_template<Float>(S, K, T, r, q, sigma) {}
+
+  /**
+   * value of option.
+   *
+   * @return
+   */
+  inline constexpr
+  Float premium() const {
+    return -this->SPV() * norm_cdf(-this->d1()) + this->KPV() * norm_cdf(-this->d2());
+  }
+
+  /**
+   * delta of option.
+   * sensitivity of option value with respect to underlying price.
+   * Delta = dV / dS
+   *
+   * @return
+   */
+  inline constexpr
+  Float delta() const {
+    return -exp(-this->q * this->T) * norm_cdf(-this->d1());
+  }
+
+  /**
+   * compute the implied volatility from the provided information,
+   * and returns a plain vanilla put option instance with the computed implied volatility.
+   *
+   * @param S
+   * @param K
+   * @param T
+   * @param r
+   * @param q
+   * @param price
+   * @return
+   */
+  inline static constexpr
+  put_vanilla<Float>
+  implied(Float S, Float K, Float T, Float r, Float q, Float price) {
+    return implied_newt(put_vanilla<Float>(S, K, T, r, q, 0.5), price);
+  }
+
+  /**
+   * uses newton's method to compute implied volatility.
+   * @param op
+   * @param price
+   * @return
+   */
+  inline static constexpr
+  put_vanilla<Float>
+  implied_newt(put_vanilla<Float> op, Float price) {
+    return 1e2 /*scaling factor to machine epsilon to compare with absolute error, this is sad*/
+               * limits<Float>::epsilon() > abs(op.premium() - price)
+           /*if error is acceptable*/ ? op :
+           /*else*/ implied_newt(
+            /*new option */ put_vanilla<Float>(op.S, op.K, op.T, op.r, op.q,
+                /*new sigma*/ op.sigma - (op.premium() - price) / op.vega()) //  the newton iteration
+            , price);
   }
 };
 } // namespace cqf

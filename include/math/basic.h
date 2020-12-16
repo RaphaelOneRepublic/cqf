@@ -34,7 +34,7 @@ inline static constexpr
 Numeric
 abs(Numeric x) noexcept {
   return
-      (x == static_cast<Numeric>(0)) ? static_cast<Numeric>(0) : // deals with minus zero
+      (x == static_cast<Numeric>(0)) ? static_cast<Numeric>(0) : // deals with negative zero
       (x > static_cast<Numeric>(0)) ? x : -x;
 }; // func abs
 

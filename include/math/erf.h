@@ -26,7 +26,7 @@ template<typename Float, typename =floating_guard<Float>>
 inline static constexpr
 Float
 erf_recur(Float x, Float acc, Float fac, size_t recur) noexcept {
-  return abs(fac / acc) < limits<Float>::epsilon() or recur > 64 ? acc :
+  return abs(fac) < limits<Float>::epsilon() or recur > 64 ? acc :
          erf_recur(x, acc + fac,
                    -fac * x * x
                        * (2. * static_cast<Float>(recur) - 1.)
@@ -80,7 +80,11 @@ template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
 erf(Numeric x) noexcept {
+#if  USE_CONSTEXPR_STD
+  return std::erf(static_cast<promoted<Numeric>>(x));
+#else
   return impl::erf_impl(static_cast<promoted<Numeric>>(x));
+#endif
 }
 } // namespace cqf
 

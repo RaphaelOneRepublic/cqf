@@ -66,9 +66,13 @@ template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
 ln(Numeric x) noexcept {
+#if USE_CONSTEXPR_STD
+  return std::log(static_cast<promoted<Numeric>>(x));
+#else
   return x == static_cast<Numeric>(2) ? static_cast<promoted<Numeric>>(0.6931471805599453094172321214581765680755l) :
          x == static_cast<Numeric>(10) ? static_cast<promoted<Numeric>>(2.3025850929940456840179914546843642076011l) :
          impl::ln_impl(static_cast<promoted<Numeric>>(x));
+#endif
 }
 
 /**

@@ -32,7 +32,8 @@ class TestSuite :
 };
 
 TEST_F(TestSuite, main) {
-  cqf::vanilla option(100., 100., 1., 0.05, 0.3);
-  std::cout << option.premium() << std::endl;
+  constexpr cqf::put_vanilla option(100.0, 100.0, 1., 0.05, 0.0, 0.3);
+  std::cout << option.vega() << std::endl;
+  std::cout << cqf::put_vanilla<double>::implied(100.0, 100.0, 1., 0.05, 0.0, 14).premium() << std::endl;
 }
 #pragma clang diagnostic pop

@@ -63,7 +63,11 @@ template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
 exp(Numeric x) noexcept {
+#if USE_CONSTEXPR_STD
+  return std::exp(static_cast<promoted<Numeric>>(x));
+#else
   return impl::exp_impl(static_cast<promoted<Numeric>>(x));
+#endif
 }
 } // namespace cqf
 

@@ -31,7 +31,11 @@ template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
 sqrt(Numeric x) noexcept {
+#if  USE_CONSTEXPR_STD
+  return std::sqrt(x);
+#else
   return impl::sqrt_impl(static_cast<promoted<Numeric>>(x));
+#endif
 }
 } // namespace cqf
 

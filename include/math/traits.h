@@ -6,6 +6,20 @@
 
 #include <type_traits>
 #include <limits>
+#include <cmath>
+
+/**
+ * Due to the fact that some compiler might treat standard math functions as constexpr functions,
+ * the implementations may directly call these for maximized performance.
+ * On to get rid of standard library implementations
+ */
+#define FORCE_SHADOW_STD 1
+
+#ifndef _GLIBCXX_CONSTEXPR
+#define _GLIBCXX_CONSTEXPR
+#endif
+
+#define USE_CONSTEXPR_STD (_GLIBCXX_CONSTEXPR == constexpr && !FORCE_SHADOW_STD)
 
 namespace cqf {
 template<typename Numeric>
