@@ -16,9 +16,9 @@ Currently, the functionality is minimal and barely supports the computation of p
 3. Newton-Raphson's for quick convergence
 `sqrt`, `exp`,`ln` (each a combination of Newton's for slowly convergent portion and Taylor's for quickly convergent portion)
 4. Bisection method for computing integral powers, `power`
-5. Generalized Gamma functions, `gamma`, (TODO)
-6. Simpson's for computing analytically insolvable integrals (TODO)
-7. Black-Scholes model and Greeks (TODO)
+5. Simpson's for computing analytically insolvable integrals (TODO, done)
+6. Black-Scholes model and Greeks (TODO, done)
+7. Generalized Gamma functions, `gamma`, (TODO)
 
 ## Typing
 Since the entire library is templated, a mechanism is used to maintain type relationships.

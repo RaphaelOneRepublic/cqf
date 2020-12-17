@@ -19,13 +19,29 @@
 #ifndef _GLIBCXX_CONSTEXPR
 #define _GLIBCXX_CONSTEXPR
 #endif
+/**
+ * whether to fallback to constexpr std
+ */
 #define CQF_CONSTEXPR_STL_FALLBACK (_GLIBCXX_CONSTEXPR == constexpr && !CQF_FORCE_NO_STL)
 
 /**
  * initial guess used in newton's method in search for the real implied volatility.
- * might affect convergence
+ * might somewhat affect convergence.
  */
 #define CQF_DEFAULT_IMPLIED 0.5
+
+/**
+ * initial guess used in newton's method in search for the real implied yield to maturity.
+ * might somewhat affect convergence.
+ */
+#define CQF_DEFAULT_YIELD 0.1
+
+/**
+ * multiple of a hundred.
+ * default par value is $100.
+ * CAUTION: values other than 1 are prone to static call stack errors
+ */
+#define CQF_DEFAULT_PAR_VALUE 1.
 
 /**
  * how much the machine epsilon is to be scaled to be the absolute error between computed value and real value

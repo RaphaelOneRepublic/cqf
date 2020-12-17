@@ -83,6 +83,9 @@ class vanilla_template {
     return K * exp(-r * T);
   }
 
+  inline constexpr
+  Float implied_volatility() const { return sigma; };
+
   /**
    * value of option.
    *
@@ -238,6 +241,7 @@ class call_vanilla : public vanilla_template<Float> {
     return implied_newt(call_vanilla<Float>(S, K, T, r, q, CQF_DEFAULT_IMPLIED), price);
   }
 
+ private:
   /**
    * uses newton's method to compute implied volatility.
    *
@@ -346,6 +350,7 @@ class put_vanilla : public vanilla_template<Float> {
     return implied_newt(put_vanilla<Float>(S, K, T, r, q, CQF_DEFAULT_IMPLIED), price);
   }
 
+ private:
   /**
    * uses newton's method to compute implied volatility.
    *

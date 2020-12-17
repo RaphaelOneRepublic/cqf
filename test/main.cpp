@@ -20,6 +20,7 @@
 #include "math/integral.h"
 
 #include "model/black_scholes.h"
+#include "model/coupon_bond.h"
 
 class TestSuite :
     public ::testing::Test {
@@ -37,5 +38,12 @@ TEST_F(TestSuite, main) {
   std::function<double(double)> func = [](double x) { return exp(-x * x / 2); };
   std::cout << std::setprecision(15) << cqf::integrate(func, -100., 100.) << std::endl;
   std::cout << std::setprecision(15) << cqf::sqrt(2 * cqf::constants<double>::pi) << std::endl;
+}
+
+TEST_F(TestSuite, coupon) {
+  constexpr cqf::coupon_bond bond = cqf::coupon_bond<double>::with_price(3., 4., 102.);
+  std::cout << bond.yield_to_maturity() << std::endl;
+  std::cout << bond.duration() << std::endl;
+  std::cout << bond.convexity() << std::endl;
 }
 #pragma clang diagnostic pop
