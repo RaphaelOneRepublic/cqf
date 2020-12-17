@@ -189,6 +189,70 @@ fraction(Numeric x) noexcept {
   return nan(x) or x == limits<Numeric>::infinity() ? x :   //  nan / infinity
          static_cast<Numeric>(x - floor(x + 0.5));
 }
+
+/**
+ * computes the sum of two variables
+ *
+ * @tparam Numeric1
+ * @tparam Numeric2
+ * @param x
+ * @param y
+ * @return
+ */
+template<typename Numeric1, typename Numeric2>
+inline static constexpr
+common<Numeric1, Numeric2>
+sum(Numeric1 x, Numeric2 y) {
+  return x + y;
+}
+
+/**
+ * computes the sum of a list of variables
+ *
+ * @tparam Numeric
+ * @tparam Numerics
+ * @param x
+ * @param numerics
+ * @return
+ */
+template<typename Numeric, typename ... Numerics>
+inline static constexpr
+common<Numeric, Numerics...>
+sum(Numeric x, Numerics... numerics) {
+  return sum(x, sum(numerics...));
+}
+
+/**
+ * computes the product of two variables
+ *
+ * @tparam Numeric1
+ * @tparam Numeric2
+ * @param x
+ * @param y
+ * @return
+ */
+template<typename Numeric1, typename Numeric2>
+inline static constexpr
+common<Numeric1, Numeric2>
+prod(Numeric1 x, Numeric2 y) {
+  return x * y;
+}
+
+/**
+ * computes the product of a list of variables
+ *
+ * @tparam Numeric
+ * @tparam Numerics
+ * @param x
+ * @param numerics
+ * @return
+ */
+template<typename Numeric, typename ... Numerics>
+inline static constexpr
+common<Numeric, Numerics...>
+prod(Numeric x, Numerics... numerics) {
+  return prod(x, prod(numerics...));
+}
 } // namespace cqf
 
 #endif //CONSTEXPR_QUANTITATIVE_INCLUDE_MATH_BASIC_H_

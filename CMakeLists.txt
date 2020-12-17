@@ -10,7 +10,14 @@ add_library(
         include/math/power.h
         include/math/exp.h
         include/math/log.h
-        include/math/sqrt.h include/math/erf.h include/math/gamma.h include/math/trig.h include/math/gcd.h include/math/norm.h include/model/black_scholes.h)
+        include/math/sqrt.h
+        include/math/erf.h
+        include/math/gamma.h
+        include/math/trig.h
+        include/math/gcd.h
+        include/math/norm.h
+        include/model/black_scholes.h
+        include/math/integral.h)
 target_include_directories(cqf PUBLIC include)
 
 enable_testing()

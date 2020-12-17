@@ -198,8 +198,8 @@ class call_vanilla : public vanilla_template<Float> {
            /*if error is acceptable*/ ? op :
            /*else*/ implied_newt(
             /*new option */ call_vanilla<Float>(op.S, op.K, op.T, op.r, op.q,
-                /*new sigma*/ op.sigma - (op.premium() - price) / op.vega()) //  the newton iteration
-            , price);
+                /*new sigma by newton's*/ op.sigma - (/*func value*/op.premium() - price) / /*derivative*/ op.vega()),
+            /*price unchanged*/ price);
   }
 };
 
@@ -267,6 +267,7 @@ class put_vanilla : public vanilla_template<Float> {
 
   /**
    * uses newton's method to compute implied volatility.
+   *
    * @param op
    * @param price
    * @return
@@ -279,8 +280,8 @@ class put_vanilla : public vanilla_template<Float> {
            /*if error is acceptable*/ ? op :
            /*else*/ implied_newt(
             /*new option */ put_vanilla<Float>(op.S, op.K, op.T, op.r, op.q,
-                /*new sigma*/ op.sigma - (op.premium() - price) / op.vega()) //  the newton iteration
-            , price);
+                /*new sigma*/ op.sigma - (/*func value*/op.premium() - price) / /*derivative*/ op.vega()),
+            /*price unchanged*/ price);
   }
 };
 } // namespace cqf
