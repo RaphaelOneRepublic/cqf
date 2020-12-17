@@ -20,7 +20,7 @@ template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
 norm_pdf(Numeric x) noexcept {
-  return 1. / sqrt(2. * constants < promoted < Numeric >> ::pi) * exp(-0.5 * x * x);
+  return 1. / sqrt(constants < promoted < Numeric >> ::_2pi) * exp(-0.5 * x * x);
 } // func norm_pdf
 } // namespace cqf
 

@@ -16,7 +16,7 @@ namespace cqf {
  * @return
  */
 template<typename Integral1, typename Integral2,
-    typename = integral_guard<Integral1>, typename= integral_guard<Integral2>>
+    typename = integral_guard<Integral1, Integral2>>
 common<Integral1, Integral2>
 gcd(Integral1 x, Integral2 y) {
   return y == 0 ? x : gcd(y, x % y);
@@ -32,7 +32,7 @@ gcd(Integral1 x, Integral2 y) {
  * @return
  */
 template<typename Integral1, typename Integral2,
-    typename = integral_guard<Integral1>, typename= integral_guard<Integral2>>
+    typename = integral_guard<Integral1, Integral2>>
 common<Integral1, Integral2>
 lcm(Integral1 x, Integral2 y) {
   return x * y / gcd(x, y);
