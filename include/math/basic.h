@@ -23,6 +23,20 @@ nan(Numeric x) {
 }
 
 /**
+ * finite
+ *
+ * @tparam Numeric
+ * @param x
+ * @return true only if x is finite
+ */
+template<typename Numeric>
+inline static constexpr
+bool
+finite(Numeric x) {
+  return x != limits<Numeric>::infinity() && x != -limits<Numeric>::infinity();
+}
+
+/**
  * abs
  *
  * @tparam Numeric
@@ -171,7 +185,7 @@ template<typename Numeric>
 inline static constexpr
 Numeric
 round(Numeric x) noexcept {
-  return nan(x) or x == limits<Numeric>::infinity() ? x :   //  nan / infinity
+  return nan(x) or !finite(x) ? x :   //  nan / infinity
          static_cast<Numeric>(floor(x + 0.5));
 }
 
@@ -186,7 +200,7 @@ template<typename Numeric>
 inline static constexpr
 Numeric
 fraction(Numeric x) noexcept {
-  return nan(x) or x == limits<Numeric>::infinity() ? x :   //  nan / infinity
+  return nan(x) or !finite(x) ? x :   //  nan / infinity
          static_cast<Numeric>(x - floor(x + 0.5));
 }
 

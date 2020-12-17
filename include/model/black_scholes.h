@@ -16,8 +16,8 @@ namespace cqf {
  * @tparam Float
  */
 template<typename Float, typename = floating_guard<Float>>
-struct vanilla_template {
-
+class vanilla_template {
+ protected:
   Float S;        // spot underlying
   Float K;        // strike
   Float T;        // time to maturity
@@ -93,16 +93,42 @@ struct vanilla_template {
   /**
    * delta of option.
    * sensitivity of option value with respect to underlying price.
-   * Delta = dV / dS
+   * Delta = dV / dS.
+   *
+   * Virtual implementation. real implementations depend on whether the option is call or put.
    *
    * @return
    */
   inline virtual Float delta() const { return 0; };
 
   /**
+   * theta of option.
+   * sensitivity of option value with respect to time to maturity
+   * Theta = dV / d tau.
+   *
+   * Virtual implementation. real implementations depend on whether the option is call or put.
+   *
+   * @return
+   */
+  inline virtual Float theta() const { return 0; }
+
+  /**
+   * rho of option.
+   * sensitivity of option value with respect to risk-free interest rate.
+   * Rho = dV / dr.
+   *
+   * Virtual implementation. real implementations depend on whether the option is call or put.
+   *
+   * @return
+   */
+  inline virtual Float rho() const { return 0; }
+
+  /**
    * gamma of option.
    * sensitivity of option delta with respect to underlying price.
-   * Gamma = d^2V / dS^2
+   * Gamma = d^2V / dS^2.
+   *
+   * Same for both call and put.
    *
    * @return
    */
@@ -113,7 +139,10 @@ struct vanilla_template {
   /**
    * vega of option.
    * sensitivity of option value with respect to implied volatility.
-   * Vega = dV / d sigma
+   * Vega = dV / d sigma.
+   *
+   * Same for both call and put.
+   *
    * @return
    */
   inline constexpr Float vega() const {
@@ -166,6 +195,32 @@ class call_vanilla : public vanilla_template<Float> {
   }
 
   /**
+   * theta of option.
+   * sensitivity of option value with respect to time to maturity
+   * Theta = dV / d tau
+   *
+   * @return
+   */
+  inline constexpr
+  Float theta() const {
+    return -exp(-this->q * this->T) * this->S * norm_pdf(this->d1()) * this->sigma / 2. / sqrt(this->T)
+        - this->r * this->KPV() * norm_cdf(this->d2())
+        + this->q * this->SPV() * norm_cdf(this->d1());
+  }
+
+  /**
+   * rho of option.
+   * sensitivity of option value with respect to risk-free interest rate
+   * Rho = dV / dr
+   *
+   * @return
+   */
+  inline constexpr
+  Float rho() const {
+    return this->T * this->KPV() * norm_cdf(this->d2());
+  }
+
+  /**
    * compute the implied volatility from the provided information,
    * and returns a plain vanilla call option instance with the computed implied volatility.
    *
@@ -180,7 +235,7 @@ class call_vanilla : public vanilla_template<Float> {
   inline static constexpr
   call_vanilla<Float>
   implied(Float S, Float K, Float T, Float r, Float q, Float price) {
-    return implied_newt(call_vanilla<Float>(S, K, T, r, q, 0.5), price);
+    return implied_newt(call_vanilla<Float>(S, K, T, r, q, CQF_DEFAULT_IMPLIED), price);
   }
 
   /**
@@ -193,7 +248,7 @@ class call_vanilla : public vanilla_template<Float> {
   inline static constexpr
   call_vanilla<Float>
   implied_newt(call_vanilla<Float> op, Float price) {
-    return 1e2 /*scaling factor to machine epsilon to compare with absolute error, this is sad*/
+    return CQF_IMPLIED_ERROR_SCALE /*scaling factor to machine epsilon to compare with absolute error, this is sad*/
                * limits<Float>::epsilon() * price > abs(op.premium() - price)
            /*if error is acceptable*/ ? op :
            /*else*/ implied_newt(
@@ -248,6 +303,32 @@ class put_vanilla : public vanilla_template<Float> {
   }
 
   /**
+   * theta of option.
+   * sensitivity of option value with respect to time to maturity
+   * Theta = dV / d tau
+   *
+   * @return
+   */
+  inline constexpr
+  Float theta() const {
+    return -exp(-this->q * this->T) * this->S * norm_pdf(-this->d1()) * this->sigma / 2. / sqrt(this->T)
+        + this->r * this->KPV() * norm_cdf(-this->d2())
+        - this->q * this->SPV() * norm_cdf(-this->d1());
+  }
+
+  /**
+   * rho of option.
+   * sensitivity of option value with respect to risk-free interest rate
+   * Rho = dV / dr
+   *
+   * @return
+   */
+  inline constexpr
+  Float rho() const {
+    return -this->T * this->KPV() * norm_cdf(-this->d2());
+  }
+
+  /**
    * compute the implied volatility from the provided information,
    * and returns a plain vanilla put option instance with the computed implied volatility.
    *
@@ -262,7 +343,7 @@ class put_vanilla : public vanilla_template<Float> {
   inline static constexpr
   put_vanilla<Float>
   implied(Float S, Float K, Float T, Float r, Float q, Float price) {
-    return implied_newt(put_vanilla<Float>(S, K, T, r, q, 0.5), price);
+    return implied_newt(put_vanilla<Float>(S, K, T, r, q, CQF_DEFAULT_IMPLIED), price);
   }
 
   /**
@@ -275,7 +356,7 @@ class put_vanilla : public vanilla_template<Float> {
   inline static constexpr
   put_vanilla<Float>
   implied_newt(put_vanilla<Float> op, Float price) {
-    return 1e2 /*scaling factor to machine epsilon to compare with absolute error, this is sad*/
+    return CQF_IMPLIED_ERROR_SCALE /*scaling factor to machine epsilon to compare with absolute error, this is sad*/
                * limits<Float>::epsilon() > abs(op.premium() - price)
            /*if error is acceptable*/ ? op :
            /*else*/ implied_newt(

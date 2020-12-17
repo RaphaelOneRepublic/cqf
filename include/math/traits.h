@@ -14,13 +14,32 @@
  * the implementations may directly call these for maximized performance.
  * On to get rid of standard library implementations
  */
-#define FORCE_SHADOW_STD 1
+#define CQF_FORCE_NO_STL 1
 
 #ifndef _GLIBCXX_CONSTEXPR
 #define _GLIBCXX_CONSTEXPR
 #endif
+#define CQF_CONSTEXPR_STL_FALLBACK (_GLIBCXX_CONSTEXPR == constexpr && !CQF_FORCE_NO_STL)
 
-#define USE_CONSTEXPR_STD (_GLIBCXX_CONSTEXPR == constexpr && !FORCE_SHADOW_STD)
+/**
+ * initial guess used in newton's method in search for the real implied volatility.
+ * might affect convergence
+ */
+#define CQF_DEFAULT_IMPLIED 0.5
+
+/**
+ * how much the machine epsilon is to be scaled to be the absolute error between computed value and real value
+ */
+#define CQF_IMPLIED_ERROR_SCALE 1e2
+
+/**
+ * maximum / minimum recurrences
+ */
+#define CQF_MAX_TRIG_RECUR 16
+#define CQF_MAX_EXP_RECUR 32
+#define CQF_MAX_LOG_RECUR 512
+#define CQF_MAXIMUM_SIMPSON_PARTITION 65536
+#define CQF_MINIMUM_SIMPSON_PARTITION 16
 
 namespace cqf {
 

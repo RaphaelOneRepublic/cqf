@@ -27,7 +27,7 @@ template<typename Float, typename = floating_guard<Float>>
 inline static constexpr
 Float
 ln_recur(Float x, Float l0, Float l1, size_t recur) noexcept {
-  return abs(l0 - l1) / l0 < limits<Float>::epsilon() or recur > 512 ? l0 :
+  return abs(l0 - l1) / l0 < limits<Float>::epsilon() or recur > CQF_MAX_LOG_RECUR ? l0 :
          ln_recur(x, l0 + static_cast<Float>(2.) * (x - exp(l0)) / (x + exp(l0)), l0, recur + 1);
 }
 
@@ -66,7 +66,7 @@ template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
 ln(Numeric x) noexcept {
-#if USE_CONSTEXPR_STD
+#if CQF_CONSTEXPR_STL_FALLBACK
   return std::log(static_cast<promoted<Numeric>>(x));
 #else
   return x == static_cast<Numeric>(2) ? static_cast<promoted<Numeric>>(0.6931471805599453094172321214581765680755l) :

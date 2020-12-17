@@ -87,8 +87,9 @@ Float
 integrate_recur(const univariate_real_func<Float> &func, Float a, Float b, Float cur, Float prev, size_t n) {
   return (
              /*acceptable error rate*/ abs(cur - prev) < limits<Float>::epsilon() * abs(cur) &&
-          /*at least 16 partitions / 2 iterations to get rid of the initial two guesses*/  n > 16
-         ) /*maximum partitions*/ || (n > 65536) ? cur :
+          /*at least 16 partitions
+           *2 iterations to get rid of the initial two guesses*/  n > CQF_MINIMUM_SIMPSON_PARTITION
+         ) /*maximum partitions*/ || (n > CQF_MAXIMUM_SIMPSON_PARTITION) ? cur :
          /*double partition numbers*/ integrate_recur(func, a, b, integrate_part(func, a, b, n * 2), cur, n * 2);
 }
 

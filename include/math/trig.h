@@ -77,7 +77,7 @@ template<typename Float, typename  = floating_guard<Float>>
 inline static constexpr
 promoted<Float>
 sin_recur(Float x, Float acc, Float fac, size_t recur) noexcept {
-  return recur > 16 ? acc :
+  return recur > CQF_MAX_TRIG_RECUR ? acc :
          sin_recur(x, acc + fac,
                    -fac * x * x / (2. * static_cast<Float>(recur)) / (2. * static_cast<Float>(recur) + 1.), recur + 1);
 }
@@ -126,7 +126,7 @@ template<typename Float, typename  = floating_guard<Float>>
 inline static constexpr
 promoted<Float>
 cos_recur(Float x, Float acc, Float fac, size_t recur) noexcept {
-  return recur > 16 ? acc :
+  return recur > CQF_MAX_TRIG_RECUR ? acc :
          cos_recur(x, acc + fac,
                    -fac * x * x / (2. * static_cast<Float>(recur)) / (2. * static_cast<Float>(recur) - 1.), recur + 1);
 }
@@ -207,6 +207,7 @@ csc(Numeric x) noexcept {
 
 /**
  * cotangent function
+ * this computation is rather slow
  *
  * @tparam Numeric
  * @param x

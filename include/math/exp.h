@@ -22,7 +22,7 @@ template<typename Float, typename =floating_guard<Float>>
 inline static constexpr
 Float
 exp_taylor(Float x, size_t recur) noexcept {
-  return recur > 32
+  return recur > CQF_MAX_EXP_RECUR
          ? 1.
          : exp_taylor(x, recur + 1) * (x / static_cast<Float>(recur)) + 1.;
 }
@@ -63,7 +63,7 @@ template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
 exp(Numeric x) noexcept {
-#if USE_CONSTEXPR_STD
+#if CQF_CONSTEXPR_STL_FALLBACK
   return std::exp(static_cast<promoted<Numeric>>(x));
 #else
   return impl::exp_impl(static_cast<promoted<Numeric>>(x));

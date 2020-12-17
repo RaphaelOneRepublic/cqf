@@ -34,8 +34,8 @@ class TestSuite :
 
 TEST_F(TestSuite, main) {
   constexpr cqf::put_vanilla option(100.0, 100.0, 1., 0.05, 0.0, 0.3);
-  std::function<double(double)> func = [](double x) { return 1. / x; };
-  std::cout << std::setprecision(15) << cqf::integrate(func, 1., 2.) << std::endl;
-  std::cout << std::setprecision(15) << cqf::ln(2) << std::endl;
+  std::function<double(double)> func = [](double x) { return exp(-x * x / 2); };
+  std::cout << std::setprecision(15) << cqf::integrate(func, -100., 100.) << std::endl;
+  std::cout << std::setprecision(15) << cqf::sqrt(2 * cqf::constants<double>::pi) << std::endl;
 }
 #pragma clang diagnostic pop

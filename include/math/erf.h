@@ -80,7 +80,7 @@ template<typename Numeric>
 inline static constexpr
 promoted<Numeric>
 erf(Numeric x) noexcept {
-#if  USE_CONSTEXPR_STD
+#if  CQF_CONSTEXPR_STL_FALLBACK
   return std::erf(static_cast<promoted<Numeric>>(x));
 #else
   return impl::erf_impl(static_cast<promoted<Numeric>>(x));

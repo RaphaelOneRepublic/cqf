@@ -17,7 +17,7 @@ add_library(
         include/math/gcd.h
         include/math/norm.h
         include/model/black_scholes.h
-        include/math/integral.h)
+        include/math/integral.h include/model/coupon_bond.h)
 target_include_directories(cqf PUBLIC include)
 
 enable_testing()
